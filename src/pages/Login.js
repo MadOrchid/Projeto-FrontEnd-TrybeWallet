@@ -9,6 +9,7 @@ class Login extends React.Component {
     this.state = {
       email: '',
       password: '',
+      enable: true,
     };
   }
 
@@ -24,16 +25,21 @@ class Login extends React.Component {
     history.push('/carteira');
   }
 
-  render() {
+  validateLogin = () => {
     const { email, password } = this.state;
-    const numberPassword = 6;
-    let enable = true;
+    const minLength = 6;
 
-    if (email.includes('@' && '.com') && password.length >= numberPassword) {
-      enable = false;
+    const emailValidate = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
+
+    if (password.length >= minLength && email.match(emailValidate)) {
+      this.setState({ enable: false });
     } else {
-      enable = true;
+      this.setState({ enable: true });
     }
+  }
+
+  render() {
+    const { email, password, enable } = this.state;
 
     return (
       <form onSubmit={ this.handleSubmit }>
@@ -44,6 +50,7 @@ class Login extends React.Component {
             type="text"
             data-testid="email-input"
             placeholder="E-mail"
+            value={ email }
             onChange={ this.handleChange }
           />
         </label>
@@ -52,7 +59,7 @@ class Login extends React.Component {
             type="password"
             data-testid="password-input"
             placeholder="password"
-            minLength="6"
+            value={ password }
             onChange={ this.handleChange }
           />
         </label>
@@ -70,7 +77,7 @@ Login.propTypes = {
 };
 
 const mapDispatchToProps = (dispatch) => ({
-  dispatchSetValue: (value) => dispatch(setUsersValue(value)),
+  dispatchSetValue: (email) => dispatch(setUsersValue(email)),
 });
 
 export default connect(null, mapDispatchToProps)(Login);
