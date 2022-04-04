@@ -1,19 +1,10 @@
-import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 import { AllCurrencies } from '../actions';
 
-const allMethods = [
-  'Dinheiro',
-  'Cartão de crédito',
-  'Cartão de débito'];
-
-const expenseTypes = [
-  'Alimentação',
-  'Lazer',
-  'Trabalho',
-  'Transporte',
-  'Saúde'];
+const allMethods = ['Dinheiro', 'Cartão de crédito', 'Cartão de débito'];
+const expenseTypes = ['Alimentação', 'Lazer', 'Trabalho', 'Transporte', 'Saúde'];
 
 class Wallet extends React.Component {
   constructor(props) {
@@ -25,6 +16,8 @@ class Wallet extends React.Component {
       method: '',
       tag: '',
     };
+
+    this.handleChange = this.handleChange.bind(this);
   }
 
   componentDidMount() {
@@ -32,24 +25,15 @@ class Wallet extends React.Component {
     getAllCurrencies();
   }
 
-  handleChange = ({ target: { value, name } }) => {
+  handleChange({ target: { value, name } }) {
     this.setState({
       [name]: value,
     });
   }
 
   render() {
-    const {
-      email,
-      currencies } = this.props;
-
-    const {
-      currency,
-      description,
-      method,
-      tag,
-      value } = this.state;
-
+    const { email, currencies } = this.props;
+    const { currency, description, method, tag, value } = this.state;
     return (
       <div>
         <header>
@@ -66,6 +50,7 @@ class Wallet extends React.Component {
           <input
             data-testid="value-input"
             type="number"
+            name="value"
             value={ value }
             placeholder="Valor"
             onChange={ this.handleChange }
