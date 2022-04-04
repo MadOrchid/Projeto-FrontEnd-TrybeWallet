@@ -1,7 +1,28 @@
-// Coloque aqui suas actions
-export const SET_USERS = 'SET_USERS';
-export const WALLET = 'WALLET';
+import fetchAPI from '../services/fetchCurrencies';
 
-export const setUsersValue = (email) => ({
-  type: SET_USERS, email,
-});
+export function getEmail(email) {
+  return {
+    type: 'GET_EMAIL',
+    email,
+  };
+}
+
+export function getCurrencies(currencies) {
+  return {
+    type: 'GET_CURRENCIES',
+    currencies,
+  };
+}
+
+export function AllCurrencies() {
+  return async (dispatch) => {
+    try {
+      const data = await fetchAPI();
+      const filteredCurrencies = Object.keys(data)
+        .filter((currency) => currency !== 'USDT');
+      dispatch(getCurrencies(filteredCurrencies));
+    } catch (error) {
+      return error;
+    }
+  };
+}

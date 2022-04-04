@@ -1,17 +1,13 @@
-import { SET_USERS } from '../actions';
-
 const INITIAL_STATE = { email: '' };
 
-const user = (state = INITIAL_STATE, action) => {
-  switch (action.type) {
-  case SET_USERS:
+function user(state = INITIAL_STATE, action) {
+  if (action.type === 'GET_EMAIL') {
     return {
       ...state,
       email: action.email,
     };
-  default:
-    return state;
   }
-};
+  return state;
+}
 
 export default user;
