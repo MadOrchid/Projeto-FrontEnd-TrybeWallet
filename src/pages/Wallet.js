@@ -2,7 +2,7 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 import { fetchQuote } from '../actions';
-import Table from './Table'
+import Table from './Table';
 
 class Wallet extends React.Component {
   componentDidMount() {
