@@ -1,28 +1,25 @@
-import fetchAPI from '../services/fetchCurrencies';
+export const LOGIN = 'LOGIN';
+export const FETCH_SUCCESS = 'FETCH_SUCCESS';
+export const FETCH_FAILED = 'FETCH_FAILED';
 
-export function getEmail(email) {
-  return {
-    type: 'GET_EMAIL',
-    email,
-  };
-}
+export const actioLogin = (user) => ({
+  type: LOGIN,
+  user,
+});
 
-export function getCurrencies(currencies) {
-  return {
-    type: 'GET_CURRENCIES',
-    currencies,
-  };
-}
+export const actionFetchSuccess = (result) => ({
+  type: FETCH_SUCCESS,
+  result,
+});
 
-export function AllCurrencies() {
-  return async (dispatch) => {
-    try {
-      const data = await fetchAPI();
-      const filteredCurrencies = Object.keys(data)
-        .filter((currency) => currency !== 'USDT');
-      dispatch(getCurrencies(filteredCurrencies));
-    } catch (error) {
-      return error;
-    }
-  };
-}
+export const actionFetchFailed = (error) => ({
+  type: FETCH_FAILED,
+  error,
+});
+
+export const fetchQuote = () => (dispatch) => (
+  fetch('https://economia.awesomeapi.com.br/json/all')
+    .then((response) => response.json())
+    .then((data) => dispatch(actionFetchSuccess(data)))
+    .catch((error) => dispatch(actionFetchFailed(error)))
+);

@@ -1,15 +1,20 @@
+import { FETCH_SUCCESS } from '../actions';
+
 const INITIAL_STATE = {
   currencies: [],
   expenses: [],
+  isFetching: true,
 };
 
-const wallet = (state = INITIAL_STATE, action) => {
-  if (action.type === 'GET_CURRENCIES') {
+export default function wallet(state = INITIAL_STATE, action) {
+  switch (action.type) {
+  case FETCH_SUCCESS:
     return {
       ...state,
-      currencies: action.currencies,
+      currencies: Object.keys(action.result).filter((acronym) => acronym !== 'USDT'),
+      isFetching: false,
     };
+  default:
+    return state;
   }
-  return state;
-};
-export default wallet;
+}
