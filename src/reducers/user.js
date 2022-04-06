@@ -1,13 +1,21 @@
-const INITIAL_STATE = { email: '' };
+import { LOGIN } from '../actions';
 
-function user(state = INITIAL_STATE, action) {
-  if (action.type === 'GET_EMAIL') {
+// Esse reducer será responsável por tratar as informações da pessoa usuária
+const INITIAL_STATE = {
+  email: '',
+  password: '',
+  connected: false,
+};
+
+export default function user(state = INITIAL_STATE, action) {
+  switch (action.type) {
+  case LOGIN:
     return {
       ...state,
-      email: action.email,
+      ...action.user,
+      connected: true,
     };
+  default:
+    return state;
   }
-  return state;
 }
-
-export default user;

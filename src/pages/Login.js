@@ -1,82 +1,95 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { getEmail } from '../actions';
+import { actioLogin } from '../actions';
 
 class Login extends React.Component {
   constructor() {
     super();
 
     this.state = {
-      isDisabled: true,
       email: '',
       password: '',
+      validEmail: false,
+      validPassword: false,
     };
   }
 
-  handleInput = ({ target }) => {
-    const { name, value } = target;
-    this.setState({ [name]: value }, this.loginValidation);
+  handleChange = ({ target: { name, value } }) => {
+    this.setState({
+      [name]: value,
+    }, () => {
+      this.validateEmail();
+      this.validatePassword();
+    });
   }
 
-  loginValidation = () => {
-    const { email, password } = this.state;
-    const minLength = 6;
-    const emailRegex = /^[a-z0-9]+@[a-z0-9]+\.[a-z]+/i;
-
-    if (emailRegex.test(email) && password.length >= minLength) {
-      this.setState({ isDisabled: false });
-    } else {
-      this.setState({ isDisabled: true });
-    }
-  }
-
-  handleLogin = () => {
-    const { history, sendLogin } = this.props;
+  validateEmail = () => {
+    // Peguei essa expressão regular com o Nikolas Firmo
     const { email } = this.state;
-    sendLogin(email);
-    history.push('/carteira');
+    const regex = /\S+@\S+\.\S+/;
+    this.setState({
+      validEmail: regex.test(email),
+    });
+  }
+
+  validatePassword = () => {
+    const SIX = 6;
+    const { password } = this.state;
+    this.setState({
+      validPassword: password.length >= SIX,
+    });
+  }
+
+  loginWithUser = (event) => {
+    event.preventDefault();
+    const { login } = this.props;
+    const { email, password } = this.state;
+
+    login({ email, password });
   }
 
   render() {
-    const { email, password, isDisabled } = this.state;
+    const { email, password, validEmail, validPassword } = this.state;
+
     return (
-      <section>
-        <input
-          data-testid="email-input"
-          type="text"
-          name="email"
-          onChange={ this.handleInput }
-          value={ email }
-        />
-        <input
-          data-testid="password-input"
-          type="password"
-          name="password"
-          onChange={ this.handleInput }
-          value={ password }
-        />
-        <button
-          disabled={ isDisabled }
-          type="button"
-          onClick={ this.handleLogin }
-        >
-          Entrar
-        </button>
-      </section>
+      <div>
+        <form>
+          <input
+            type="email"
+            name="email"
+            placeholder="Digite seu email"
+            value={ email }
+            onChange={ this.handleChange }
+            data-testid="email-input"
+          />
+          <input
+            type="password"
+            name="password"
+            placeholder="Digite sua senha"
+            value={ password }
+            onChange={ this.handleChange }
+            data-testid="password-input"
+          />
+          <button
+            type="submit"
+            disabled={ !(validEmail && validPassword) }
+            onClick={ this.loginWithUser }
+          >
+            Entrar
+          </button>
+        </form>
+      </div>
     );
   }
 }
 
 Login.propTypes = {
-  history: PropTypes.shape({
-    push: PropTypes.func.isRequired,
-  }).isRequired,
-  sendLogin: PropTypes.func.isRequired,
+  login: PropTypes.func.isRequired,
 };
 
 const mapDispatchToProps = (dispatch) => ({
-  sendLogin: (state) => dispatch(getEmail(state)),
+  login: (user) => dispatch(actioLogin(user)),
 });
 
 export default connect(null, mapDispatchToProps)(Login);
