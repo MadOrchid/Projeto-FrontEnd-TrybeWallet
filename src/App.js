@@ -1,29 +1,15 @@
-import PropTypes from 'prop-types';
 import React from 'react';
-import { connect } from 'react-redux';
-import { Redirect, Route, Switch } from 'react-router-dom';
+import { Route, Switch } from 'react-router';
 import Login from './pages/Login';
 import Wallet from './pages/Wallet';
 
-function App({ connected }) {
+function App() {
   return (
     <Switch>
-      <Route path="/carteira">
-        <Wallet />
-      </Route>
-      <Route path="/">
-        { connected ? <Redirect to="/carteira" /> : <Login /> }
-      </Route>
+      <Route path="/carteira" component={ Wallet } />
+      <Route path="/" component={ Login } />
     </Switch>
   );
 }
 
-App.propTypes = {
-  connected: PropTypes.bool.isRequired,
-};
-
-const mapStateToProps = (state) => ({
-  connected: state.user.connected,
-});
-
-export default connect(mapStateToProps)(App);
+export default App;

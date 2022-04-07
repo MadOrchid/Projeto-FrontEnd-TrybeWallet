@@ -1,25 +1,53 @@
-export const LOGIN = 'LOGIN';
-export const FETCH_SUCCESS = 'FETCH_SUCCESS';
-export const FETCH_FAILED = 'FETCH_FAILED';
+import fetchAPI from '../services/fetchCurrencies';
 
-export const actioLogin = (user) => ({
-  type: LOGIN,
-  user,
+export function getEmail(email) {
+  return {
+    type: 'GET_EMAIL',
+    email,
+  };
+}
+
+export const fetchRequest = () => ({
+  type: 'FETCH_REQUEST',
 });
 
-export const actionFetchSuccess = (result) => ({
-  type: FETCH_SUCCESS,
-  result,
+export const fetchSuccess = (currencies) => ({
+  type: 'FETCH_SUCCESS',
+  currencies,
 });
 
-export const actionFetchFailed = (error) => ({
-  type: FETCH_FAILED,
+export const fetchFailure = (error) => ({
+  type: 'FETCH_FAILURE',
   error,
 });
 
-export const fetchQuote = () => (dispatch) => (
-  fetch('https://economia.awesomeapi.com.br/json/all')
-    .then((response) => response.json())
-    .then((data) => dispatch(actionFetchSuccess(data)))
-    .catch((error) => dispatch(actionFetchFailed(error)))
-);
+export const getExpense = (expense, exchangeRates) => ({
+  type: 'GET_EXPENSE',
+  expense: { ...expense, exchangeRates },
+});
+
+export function AllCurrencies() {
+  return async (dispatch) => {
+    dispatch(fetchRequest());
+    try {
+      const apiData = await fetchAPI();
+      const currencies = Object.keys(apiData).filter((currency) => currency !== 'USDT');
+      dispatch(fetchSuccess(currencies));
+    } catch (error) {
+      dispatch(fetchFailure(error));
+    }
+  };
+}
+
+export function expExchangeRates(expense) {
+  return async (dispatch) => {
+    dispatch(fetchRequest());
+    await fetchAPI()
+      .then((data) => {
+        dispatch(getExpense(expense, data));
+      })
+      .catch((error) => {
+        dispatch(fetchFailure(error.message));
+      });
+  };
+}
