@@ -1,104 +1,95 @@
-import PropTypes from 'prop-types';
 import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { getEmail } from '../actions';
+import { Redirect } from 'react-router';
+import { saveEmailLogin } from '../actions';
 
 class Login extends React.Component {
   constructor() {
     super();
-
     this.state = {
       email: '',
       password: '',
-      passwordLength: 0,
-      validateButton: true,
+      redirect: false, // usado para redirecionar página se true;
     };
-
     this.handleChange = this.handleChange.bind(this);
-    this.validateButton = this.validateButton.bind(this);
-    this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleClick = this.handleClick.bind(this);
   }
 
-  validateButton() {
+  // função verifica os dados do formulário e retorna um boleano para ativar ou não o botão
+  getDisabled() {
     const { email, password } = this.state;
-    const minLength = 6;
+    const checkEmail = (emailElem) => {
+      const verify = /\S+@\S+\.\S+/; // regex formato texto@texto.com
+      return verify.test(emailElem); // test retorna booleano
+    };
+    const passwordCharacters = 6;
+    const checkPassword = (pass) => pass.length >= passwordCharacters;
 
-    this.setState({
-      validateButton: !(email
-        .match(/[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/) && password.length >= minLength),
-    });
-  }
+    return checkEmail(email) && checkPassword(password); /* funções verifica o email e senha e
+    retorna true se as duas verificação derem true também, que por sua vez enquanto a função getDisabled retornar false o botão fica desabilitado
+    e se retornar true o botão de enviar é habilitado e é possível ser clicado */
+  } // fonte: https://www.horadecodar.com.br/2020/09/13/como-validar-email-com-javascript/
 
-  validatePassword(length) {
-    const minLength = 6;
-
-    if (length < minLength) {
-      return (
-        <p>Digite um email e uma senha valida </p>
-      );
-    }
-  }
-
+  // salva as infos do input no state do componente
   handleChange({ target }) {
-    const { passwordLength } = this.state;
-    const { type, value } = target;
-
-    this.setState({
-      [type]: value,
-      passwordLength: type === 'password' ? value.length : passwordLength,
-    }, () => this.validateButton());
+    const { name, value } = target;
+    this.setState({ [name]: value });
   }
 
-  handleSubmit(e) {
+  /* ao clicar no botão de enviar seta o state de redirecionamento para true, logo o Redirect direciona rota para /carteira
+   e dipara a action passando o email do state interno para o ser salvo no store */
+  handleClick() {
     const { email } = this.state;
-    const { history, getEmailValue } = this.props;
-    e.preventDefault();
-    getEmailValue(email);
-    history.push('/carteira');
+    const { saveLogin } = this.props;
+    this.setState({
+      redirect: true,
+    });
+    saveLogin(email);
   }
 
   render() {
-    const { email, password, validateButton, passwordLength } = this.state;
-
+    const { redirect } = this.state;
+    // verifica se redirect é true se sim redireciona a página, sendo true somente ao apertar o botão de enviar
+    if (redirect) {
+      return <Redirect to="/carteira" />;
+    }
     return (
-      <form onSubmit={ this.handleSubmit }>
-        <input
-          value={ email }
-          onChange={ this.handleChange }
-          type="email"
-          placeholder="Email"
-          data-testid="email-input"
-          pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
-          required
-        />
-        <input
-          value={ password }
-          onChange={ this.handleChange }
-          type="password"
-          placeholder="Senha"
-          minLength={ 6 }
-          data-testid="password-input"
-        />
-        { this.validatePassword(passwordLength) }
-        <button
-          type="submit"
-          disabled={ validateButton }
-        >
-          Entrar
-        </button>
-      </form>
-    );
+      <div>
+        <h1>Login</h1>
+        <form>
+          <input
+            data-testid="email-input"
+            aria-label="email"
+            type="email"
+            name="email"
+            onChange={ this.handleChange }
+          />
+          <input
+            data-testid="password-input"
+            type="text"
+            name="password"
+            onChange={ this.handleChange }
+          />
+          <button
+            type="button"
+            disabled={ !this.getDisabled() }
+            onClick={ this.handleClick }
+          >
+            Entrar
+          </button>
+        </form>
+      </div>);
   }
 }
 
-const mapDispatchToProps = (dispatch) => ({
-  getEmailValue: (email) => dispatch(getEmail(email)),
-});
+// dipara a action passando o email do state interno para o ser salvo no store
+function mapDispatchToProps(dispatch) {
+  return ({ saveLogin: (email) => dispatch(saveEmailLogin(email)) });
+}
 
 Login.propTypes = {
-  history: PropTypes.shape({
-    push: PropTypes.func.isRequired,
-  }),
-}.isRequired;
+  saveLogin: PropTypes.func.isRequired,
+};
 
 export default connect(null, mapDispatchToProps)(Login);
