@@ -75,7 +75,6 @@ class ExpenseForm extends Component {
           Valor:
           <input
             name="expenseAmount"
-            id="expenseAmount"
             value={ expenseAmount }
             data-testid="value-input"
             placeholder="Valor da despesa"
@@ -86,7 +85,6 @@ class ExpenseForm extends Component {
           Descrição:
           <input
             name="description"
-            id="description"
             data-testid="description-input"
             placeholder="Descrição da despesa"
             onChange={ this.handleChange }
@@ -96,7 +94,6 @@ class ExpenseForm extends Component {
           Moeda:
           <select
             name="currency"
-            id="currency"
             data-testid="currency-input"
             placeholder="Moeda que será registrada a despesa"
             onChange={ this.handleChange }
@@ -125,7 +122,6 @@ class ExpenseForm extends Component {
             Método de pagamento:
             <select
               name="method"
-              id="method"
               data-testid="method-input"
               onChange={ this.handleChange }
             >
@@ -139,7 +135,6 @@ class ExpenseForm extends Component {
             Tag:
             <select
               name="tag"
-              id="tag"
               data-testid="tag-input"
               onChange={ this.handleChange }
             >

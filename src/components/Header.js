@@ -59,7 +59,6 @@ class Header extends Component {
           <label htmlFor="currency-field">
             <p>Cambio utilizado:</p>
             <select
-              id="currency-field"
               data-testid="header-currency-field"
             >
               <option>BRL</option>
